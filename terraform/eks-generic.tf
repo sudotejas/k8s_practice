@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 data "aws_eks_cluster" "cluster" {
   name = module.eks-cluster-dev.cluster_id
 }
