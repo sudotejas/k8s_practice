@@ -1,3 +1,18 @@
+data "aws_eks_cluster" "cluster" {
+  name = module.eks-cluster-dev.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks-cluster-dev.cluster_id
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+  # load_config_file       = false
+}
+
 data "aws_availability_zones" "available" {
 }
 
@@ -87,6 +102,7 @@ module "eks-cluster-dev" {
   cluster_name    = local.cluster_name
   cluster_version = "1.20"
   subnets         = module.eks-vpc-dev.private_subnets
+  manage_aws_auth  = false   
 
   tags = {
     Environment = "test"
@@ -115,13 +131,4 @@ module "eks-cluster-dev" {
 
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
 
-  map_users = [
-    {
-      userarn  = "arn:aws:iam::423321982572:user/eks-admin"
-      username = "eks-admin"
-      groups   = ["system_masters"]
-    }
-  ]
-
-  map_accounts = ["423321982572", ]
 }
