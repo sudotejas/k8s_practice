@@ -101,8 +101,7 @@ module "eks-cluster-dev" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = local.cluster_name
   cluster_version = "1.20"
-  subnets         = module.eks-vpc-dev.private_subnets
-  manage_aws_auth  = false   
+  subnets         = module.eks-vpc-dev.private_subnets 
 
   tags = {
     Environment = "test"
